@@ -38,6 +38,19 @@ def poi_list(location_name, radius):
         pois.append({'name': name, 'coordinates': point})
     return pois
 
+def travel_time(location_cords1, location_cords2):
+    dist_matrix_url = f"https://api.openrouteservice.org/v2/matrix/driving-car"
+
+    body = {"locations":[location_cords1,location_cords2]}
+    headers = {
+        'Accept': 'application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8',
+        'Authorization': os.getenv('OPEN_ROUTE_API_KEY'),
+        'Content-Type': 'application/json; charset=utf-8'
+    }
+
+    call = requests.post(dist_matrix_url, json=body, headers=headers).json()
+
+    return call['durations'][0][1]
 
 # if __name__ == "__main__":
 #     city = "paris"
@@ -46,4 +59,9 @@ def poi_list(location_name, radius):
 #     print(pois)
 #     for poi in pois:
 #         print(f"Name: {poi['name']}, Coordinates: {poi['coordinates']}")
+
+#     location1 = (2.3376, 48.8606)  # Lourve
+#     location2 = (2.2945,48.8584)  # Eiffel Tower
+#     travel_time = travel_time(location1, location2)
+#     print(f"Travel time from {location1} to {location2}: {travel_time} seconds")
 
