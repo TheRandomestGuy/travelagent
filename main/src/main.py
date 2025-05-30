@@ -30,7 +30,7 @@ if __name__ == "__main__":
             Whenever using the search_tool, make sure to also ask for the coordinates of the locations.
             Dont put the coordinates in the final output, rather use them to calculate the travel time between locations.
             Make sure the intenerary follows the interests and budger of the user.
-            Please break down the budget and time estimates (Start and End) for each activity.
+            Please break down the budget and time estimates (Start and End) for each activity (make sure to include in final output).
             Once you have an itenerary, use the travel_time_tool to estimate the time between each activity.
             Then, provide the final itenerary with the estimated time and cost.
             Wrap the output in this format and provide no other text\n{format_instructions}
@@ -56,4 +56,4 @@ if __name__ == "__main__":
     query = f"Generate an itenerary for a trip to {location} with interests in {interests} and a budget of {budget} and {time} days."
     raw_response = agent_executor.invoke({"query": query})
     structured_response = parser.parse(raw_response.get("output"))
-    print(structured_response)
+    print(structured_response.itenerary.replace("\\n", "\n"))
