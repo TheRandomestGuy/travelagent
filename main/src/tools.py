@@ -3,6 +3,7 @@ from langchain_core.tools import tool
 from langchain_community.tools import DuckDuckGoSearchRun
 from langchain.tools import Tool
 from data_fetcher import poi_list, travel_time
+from google_calendar_helper import add_events_to_google_calendar
 
 @tool
 def poi_tool(location_name: str, radius: int):
@@ -56,3 +57,22 @@ search_tool = Tool(
     func=rate_limited_search,
     description="Useful for searching the web with DuckDuckGo.",
 )
+
+@tool
+def add_events_to_google_calendar_tool(events: list):
+    """
+    Add a list of events to the user's Google Calendar.
+
+    Args:
+        events (list): A list of dictionaries, each containing event details such as:
+            - summary (str): Title of the event
+            - description (str): Description of the event
+            - location (str): Location of the event
+            - start (str): ISO format start datetime (e.g., '2024-06-01T09:00:00')
+            - end (str): ISO format end datetime (e.g., '2024-06-01T10:00:00')
+    Returns:
+        str: Success message or error.
+    """
+    return add_events_to_google_calendar(events)
+
+tools = [search_tool, poi_tool, travel_time_tool, add_events_to_google_calendar_tool]
