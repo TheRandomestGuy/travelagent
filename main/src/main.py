@@ -13,6 +13,10 @@ if __name__ == "__main__":
 
     class Response(BaseModel):
         itenerary: str
+        time_estimates: list[dict]
+        budget_breakdown: dict
+        hotels: list[str]
+        restaurants: list[str]
         tools_used: list[str]
 
     llm = ChatOpenAI(model='gpt-4o')
@@ -51,9 +55,20 @@ if __name__ == "__main__":
     agent_executor = AgentExecutor(agent=agent, tools=tools)
     location = input("Where are you traveling? ")
     interests = input("What are some interests you want to find here? ")
+
+    specific_places = input("Do you have any specific places in mind? (yes/no) ")
+    places = "None"
+    if specific_places.lower() == 'yes':
+        places = input("Please list the places you have in mind, separated by commas: ")
+    else:
+        print("No specific places provided, using general interests.")
+    
+    restraunts = input("What type of restaurants are you interested in? ")
+    hotels = input("What type of hotels are you interested in? ")
+
     budget = input("What is your budget for this trip? ")
     time = input("How many days do you have for this trip? ")
-    query = f"Generate an itenerary for a trip to {location} with interests in {interests} and a budget of {budget} and {time} days."
+    query = f"Generate an itenerary for a trip to {location} with interests in {interests} and a budget of {budget} and {time} days."     # TODO: Ask for specific places of interest, types of restaurants, and hotels
     raw_response = agent_executor.invoke({"query": query})
     structured_response = parser.parse(raw_response.get("output"))
-    print(structured_response.itenerary.replace("\\n", "\n"))
+    print(structured_response)
