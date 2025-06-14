@@ -53,7 +53,7 @@ if __name__ == "__main__":
         tools = tools
     )
 
-    agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True, return_intermediate_steps=True)
+    agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=False, return_intermediate_steps=False)
     location = input("Where are you traveling? ")
     interests = input("What are some interests you want to find here? ")
 
