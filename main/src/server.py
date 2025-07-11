@@ -84,4 +84,4 @@ def add_events_to_google_calendar_tool(events: list):
     return add_events_to_google_calendar(events)
 
 if __name__ == "__main__":
-    mcp.run()
+    mcp.run(transport="sse")
