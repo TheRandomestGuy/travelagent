@@ -6,7 +6,7 @@ from langchain.tools import Tool
 from data_fetcher import poi_list, travel_time
 from google_calendar_helper import add_events_to_google_calendar
 
-mcp = FastMCP("TravelAgentServer", host="127.0.0.1", port=8050)
+mcp = FastMCP("TravelAgentServer", stateless_http=True, host="0.0.0.0", port=8000)
 
 @mcp.tool()
 def poi_tool(location_name: str, radius: int):
@@ -84,4 +84,5 @@ def add_events_to_google_calendar_tool(events: list):
     return add_events_to_google_calendar(events)
 
 if __name__ == "__main__":
-    mcp.run(transport="sse")
+        # mcp.run(transport="stdio")
+        mcp.run(transport="streamable-http")
