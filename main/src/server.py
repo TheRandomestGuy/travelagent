@@ -1,8 +1,6 @@
 import time
 from mcp.server.fastmcp import FastMCP
-from langchain_core.tools import tool
 from langchain_community.tools import DuckDuckGoSearchRun
-from langchain.tools import Tool
 from data_fetcher import poi_list, travel_time
 from google_calendar_helper import add_events_to_google_calendar
 
