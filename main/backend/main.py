@@ -4,10 +4,23 @@ from pydantic import BaseModel
 from langchain_core.output_parsers import PydanticOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from langchain.agents import create_tool_calling_agent, AgentExecutor
+from fastapi import FastAPI, Request
 from dotenv import load_dotenv
 
+app = FastAPI()
 
-if __name__ == "__main__":
+@app.post("/generate_itinerary")
+def generate_itinerary():
+    request_data = Request.json()
+    location = request_data.get("location")
+    interests = request_data.get("interests")
+    specific_places = request_data.get("specific_places", "None")
+    places = request_data.get("places", "None")
+    restaurants = request_data.get("restaurants", "None")
+    hotels = request_data.get("hotels", "None")
+    budget = request_data.get("budget")
+    time = request_data.get("time")
+    date = request_data.get("date")
 
     load_dotenv()
 
@@ -52,24 +65,10 @@ if __name__ == "__main__":
         tools = tools
     )
 
-    agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True, return_intermediate_steps=False)
-    location = input("Where are you traveling? ")
-    interests = input("What are some interests you want to find here? ")
+    agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=False, return_intermediate_steps=False) 
 
-    specific_places = input("Do you have any specific places in mind? (yes/no) ")
-    places = "None"
-    if specific_places.lower() == 'yes':
-        places = input("Please list the places you have in mind, separated by commas: ")
-    else:
-        print("No specific places provided, using general interests.")
-    
-    restraunts = input("What type of restaurants are you interested in? ")
-    hotels = input("What type of hotels are you interested in? ")
+    query = f"Generate an itinerary for a trip to {location} with interests in {interests} and a budget of {budget} and {time} days, starting on {date}."
 
-    budget = input("What is your budget for this trip? ")
-    time = input("How many days do you have for this trip? ")
-    date = input("What is the start date of your trip? (YYYY-MM-DD) ")
-    query = f"Generate an itenerary for a trip to {location} with interests in {interests} and a budget of {budget} and {time} days, starting on {date}."     # TODO: Ask for specific places of interest, types of restaurants, and hotels
     raw_response = agent_executor.invoke({"query": query})
     structured_response = parser.parse(raw_response.get("output"))
-    print(structured_response)
+    return structured_response
