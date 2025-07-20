@@ -1,4 +1,4 @@
-from tools import search_tool, poi_tool, travel_time_tool, add_events_to_google_calendar_tool
+from tools import search_tool, poi_tool, travel_time_tool, add_events_to_google_calendar_tool, tavily_search_tool
 from langchain_openai import ChatOpenAI
 from pydantic import BaseModel
 from langchain_core.output_parsers import PydanticOutputParser
@@ -35,9 +35,8 @@ if __name__ == "__main__":
             Dont put the coordinates in the final output, rather use them to calculate the travel time between locations.
             Make sure the intenerary follows the interests and budger of the user.
             Please break down the budget and time estimates (Start and End) for each activity (make sure to include in final output).
-            Once you have an itenerary, use the travel_time_tool to estimate the time between each activity.
-            Then, provide the final itenerary with the estimated time and cost.
-            Add the itenerary to the user's Google Calendar using the add_events_to_google_calendar_tool.
+            After generating the itinerary, you MUST call the add_events_to_google_calendar_tool with the final list of events. Do not output the final answer until you have called this tool.
+            Then, provide the itenerary with the estimated time and cost.
             Wrap the output in this format and provide no other text\n{format_instructions}
             """
         ),
@@ -46,14 +45,14 @@ if __name__ == "__main__":
         ("placeholder", "{agent_scratchpad}"),
     ]).partial(format_instructions=parser.get_format_instructions())
     
-    tools = [search_tool, poi_tool, travel_time_tool, add_events_to_google_calendar_tool]
+    tools = [tavily_search_tool, poi_tool, add_events_to_google_calendar_tool]
     agent = create_tool_calling_agent(
         llm = llm,
         prompt = prompt,
         tools = tools
     )
 
-    agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=False, return_intermediate_steps=False)
+    agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True, return_intermediate_steps=False)
     location = input("Where are you traveling? ")
     interests = input("What are some interests you want to find here? ")
 

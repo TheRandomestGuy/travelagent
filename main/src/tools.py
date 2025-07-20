@@ -1,9 +1,14 @@
 import time
 from langchain_core.tools import tool
 from langchain_community.tools import DuckDuckGoSearchRun
+from tavily import TavilyClient
 from langchain.tools import Tool
 from data_fetcher import poi_list, travel_time
 from google_calendar_helper import add_events_to_google_calendar
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 @tool
 def poi_tool(location_name: str, radius: int):
@@ -57,6 +62,21 @@ search_tool = Tool(
     func=rate_limited_search,
     description="Useful for searching the web with DuckDuckGo.",
 )
+
+@tool
+def tavily_search_tool(query: str, category: str = "general"):
+    """
+    Search for information using the Tavily API.
+
+    Args:
+        query (str): The search query.
+        category (str): The category of the search (default is 'general').
+
+    Returns:
+        str: The search results.
+    """
+    client = TavilyClient(os.getenv('TAVILY_API_KEY'))
+    return client.search(query, category=category)
 
 @tool
 def add_events_to_google_calendar_tool(events: list):
